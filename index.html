@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英文單字測驗</title>
+<title>七年級下學期單字複習</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,7 +20,6 @@
     --red-dim: #7a1a2b;
     --purple: #7C5CFC;
     --purple-hover: #9575FF;
-    --yellow: #FFD60A;
     --border: #353752;
   }
 
@@ -35,16 +34,159 @@
     padding: 16px;
   }
 
-  /* ── QUIZ SCREEN ── */
-  #quiz-screen {
+  /* ══════════════════════════════
+     HOME SCREEN
+  ══════════════════════════════ */
+  #home-screen {
     width: 100%;
     max-width: 560px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .home-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .home-icon {
+    font-size: 64px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 24px rgba(124,92,252,0.4));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .home-title {
+    font-size: clamp(26px, 6vw, 36px);
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 30%, #9575FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .home-subtitle {
+    font-size: 14px;
+    color: var(--text-sub);
+    font-weight: 500;
+  }
+
+  /* Stats cards */
+  .home-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .home-stat-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .home-stat-num {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--purple);
+  }
+
+  .home-stat-label {
+    font-size: 13px;
+    color: var(--text-sub);
+    font-weight: 500;
+    margin-top: 6px;
+  }
+
+  /* Info card */
+  .home-info-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 22px 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .home-info-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .home-info-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+  }
+
+  .home-info-text {
+    font-size: 14px;
+    color: var(--text-sub);
+    line-height: 1.5;
+  }
+
+  .home-info-text strong {
+    color: var(--text);
+  }
+
+  .home-info-divider {
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Start button */
+  .start-btn {
+    background: linear-gradient(135deg, #7C5CFC, #9575FF);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    border: none;
+    border-radius: 18px;
+    padding: 20px;
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 6px 28px rgba(124,92,252,0.4);
+    letter-spacing: 0.5px;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 36px rgba(124,92,252,0.55);
+  }
+
+  .start-btn:active { transform: scale(0.98); }
+
+  /* ══════════════════════════════
+     QUIZ SCREEN
+  ══════════════════════════════ */
+  #quiz-screen {
+    width: 100%;
+    max-width: 560px;
+    display: none;
+    flex-direction: column;
     gap: 20px;
   }
 
-  /* Status bar */
   .status-bar {
     display: flex;
     align-items: center;
@@ -96,12 +238,8 @@
     flex-shrink: 0;
   }
 
-  .score-badge .check-icon {
-    color: var(--green);
-    font-size: 17px;
-  }
+  .score-badge .check-icon { color: var(--green); font-size: 17px; }
 
-  /* Word card */
   .word-card {
     background: var(--card);
     border: 1.5px solid var(--border);
@@ -127,12 +265,13 @@
   }
 
   .word-display {
-    font-size: clamp(36px, 8vw, 56px);
+    font-size: clamp(32px, 7vw, 52px);
     font-weight: 800;
     color: var(--text);
     letter-spacing: -1px;
     line-height: 1.1;
     margin-top: 6px;
+    word-break: break-word;
   }
 
   .word-pos {
@@ -146,7 +285,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* Options grid */
   .options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -158,7 +296,7 @@
     border: 2px solid var(--border);
     border-radius: 16px;
     color: var(--text);
-    font-size: clamp(14px, 3.5vw, 17px);
+    font-size: clamp(13px, 3.2vw, 16px);
     font-weight: 600;
     padding: 20px 12px;
     cursor: pointer;
@@ -178,9 +316,7 @@
     box-shadow: 0 4px 20px rgba(124,92,252,0.25);
   }
 
-  .option-btn:active:not(:disabled) {
-    transform: scale(0.97);
-  }
+  .option-btn:active:not(:disabled) { transform: scale(0.97); }
 
   .option-btn.correct {
     background: var(--green-dim);
@@ -190,12 +326,6 @@
     animation: pop 0.25s ease;
   }
 
-  .option-btn.correct-hint {
-    border-color: var(--green);
-    color: var(--green);
-    background: rgba(43,222,115,0.06);
-  }
-
   .option-btn.wrong {
     background: var(--red-dim);
     border-color: var(--red);
@@ -203,9 +333,7 @@
     animation: shake 0.35s ease;
   }
 
-  .option-btn:disabled {
-    cursor: default;
-  }
+  .option-btn:disabled { cursor: default; }
 
   @keyframes pop {
     0% { transform: scale(1); }
@@ -221,7 +349,9 @@
     80% { transform: translateX(4px); }
   }
 
-  /* ── RESULT SCREEN ── */
+  /* ══════════════════════════════
+     RESULT SCREEN
+  ══════════════════════════════ */
   #result-screen {
     display: none;
     width: 100%;
@@ -278,33 +408,15 @@
     border: 1.5px solid;
   }
 
-  .stat-box.green-box {
-    background: rgba(43,222,115,0.08);
-    border-color: var(--green);
-  }
+  .stat-box.green-box { background: rgba(43,222,115,0.08); border-color: var(--green); }
+  .stat-box.red-box { background: rgba(255,77,106,0.08); border-color: var(--red); }
 
-  .stat-box.red-box {
-    background: rgba(255,77,106,0.08);
-    border-color: var(--red);
-  }
-
-  .stat-number {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1;
-  }
-
+  .stat-number { font-size: 48px; font-weight: 800; line-height: 1; }
   .green-box .stat-number { color: var(--green); }
   .red-box .stat-number { color: var(--red); }
 
-  .stat-label {
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 6px;
-    color: var(--text-sub);
-  }
+  .stat-label { font-size: 13px; font-weight: 600; margin-top: 6px; color: var(--text-sub); }
 
-  /* Time info row */
   .time-row {
     display: flex;
     align-items: center;
@@ -318,35 +430,12 @@
     flex-wrap: wrap;
   }
 
-  .time-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 14px;
-    font-weight: 600;
-  }
+  .time-item { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }
+  .time-item .time-icon { font-size: 16px; }
+  .time-item .time-value { color: var(--text); }
+  .time-item .time-label { color: var(--text-sub); font-size: 12px; font-weight: 500; }
+  .time-divider { width: 1px; height: 28px; background: var(--border); }
 
-  .time-item .time-icon {
-    font-size: 16px;
-  }
-
-  .time-item .time-value {
-    color: var(--text);
-  }
-
-  .time-item .time-label {
-    color: var(--text-sub);
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .time-divider {
-    width: 1px;
-    height: 28px;
-    background: var(--border);
-  }
-
-  /* Review list */
   .review-section {
     background: var(--card);
     border: 1.5px solid var(--border);
@@ -366,7 +455,7 @@
   }
 
   .review-list {
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
     padding: 8px 0 16px;
     scrollbar-width: thin;
@@ -385,32 +474,18 @@
   }
 
   .review-item:last-child { border-bottom: none; }
-
-  .review-icon {
-    font-size: 15px;
-    flex-shrink: 0;
-    width: 20px;
-    text-align: center;
-  }
-
-  .review-word {
-    font-weight: 700;
-    font-size: 15px;
-    flex: 1;
-  }
-
+  .review-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+  .review-word { font-weight: 700; font-size: 15px; flex: 1; }
   .review-word.correct-word { color: var(--green); }
   .review-word.wrong-word { color: var(--red); }
+  .review-def { color: var(--text-sub); font-size: 13px; text-align: right; flex-shrink: 0; max-width: 50%; }
 
-  .review-def {
-    color: var(--text-sub);
-    font-size: 13px;
-    text-align: right;
-    flex-shrink: 0;
-    max-width: 50%;
+  .result-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  /* Play again button */
   .play-again-btn {
     background: var(--purple);
     color: #fff;
@@ -432,24 +507,77 @@
     box-shadow: 0 8px 28px rgba(124,92,252,0.45);
   }
 
-  .play-again-btn:active {
-    transform: scale(0.98);
+  .play-again-btn:active { transform: scale(0.98); }
+
+  .back-home-btn {
+    background: transparent;
+    color: var(--text-sub);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    width: 100%;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
   }
 
-  /* Question transition animation */
-  .fade-in {
-    animation: fadeIn 0.3s ease;
+  .back-home-btn:hover {
+    color: var(--text);
+    border-color: var(--text-sub);
+    background: var(--card2);
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  .fade-in { animation: fadeUp 0.3s ease; }
 </style>
 </head>
 <body>
 
-<!-- QUIZ SCREEN -->
+<!-- ══ HOME SCREEN ══ -->
+<div id="home-screen">
+  <div class="home-header">
+    <div class="home-icon">📚</div>
+    <h1 class="home-title">七年級單字複習</h1>
+    <p class="home-subtitle">Junior High School Grade 7 · Vocabulary Quiz</p>
+  </div>
+
+  <div class="home-stats">
+    <div class="home-stat-card">
+      <div class="home-stat-num">271</div>
+      <div class="home-stat-label">📖 總單字數</div>
+    </div>
+    <div class="home-stat-card">
+      <div class="home-stat-num">20</div>
+      <div class="home-stat-label">🎯 每回練習題數</div>
+    </div>
+  </div>
+
+  <div class="home-info-card">
+    <div class="home-info-row">
+      <span class="home-info-icon">🔀</span>
+      <span class="home-info-text">每次從 <strong>271 個單字</strong>中隨機抽取 <strong>20 題</strong>，題目與選項順序皆隨機排列</span>
+    </div>
+    <div class="home-info-divider"></div>
+    <div class="home-info-row">
+      <span class="home-info-icon">✅</span>
+      <span class="home-info-text"><strong>答對才能進入下一題</strong>，答錯時選項會停用，繼續作答直到選對為止</span>
+    </div>
+    <div class="home-info-divider"></div>
+    <div class="home-info-row">
+      <span class="home-info-icon">📝</span>
+      <span class="home-info-text">完成後顯示<strong>答題結果</strong>與<strong>本回複習清單</strong>，記錄答對與答錯的單字</span>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startGame()">🚀 開始練習</button>
+</div>
+
+<!-- ══ QUIZ SCREEN ══ -->
 <div id="quiz-screen">
   <div class="status-bar">
     <div class="progress-left">
@@ -478,10 +606,10 @@
   </div>
 </div>
 
-<!-- RESULT SCREEN -->
+<!-- ══ RESULT SCREEN ══ -->
 <div id="result-screen">
-  <div class="result-card" id="result-card">
-    <span class="trophy-emoji">🏆</span>
+  <div class="result-card">
+    <span class="trophy-emoji" id="trophy-emoji">🏆</span>
     <div class="result-title" id="result-title">完美！全部答對！</div>
     <div class="result-subtitle" id="result-subtitle">答對 20 / 20 題</div>
     <div class="stats-row">
@@ -518,111 +646,285 @@
     <div class="review-list" id="review-list"></div>
   </div>
 
-  <button class="play-again-btn" onclick="startGame()">🔄 再玩一次（新題目）</button>
+  <div class="result-btns">
+    <button class="play-again-btn" onclick="startGame()">🔄 再玩一次（新題目）</button>
+    <button class="back-home-btn" onclick="goHome()">🏠 回到首頁</button>
+  </div>
 </div>
 
 <script>
 const WORD_BANK = [
   {id:1,word:"like",pos:"v.; prep.",definition:"喜歡；像⋯"},
   {id:2,word:"sport",pos:"n.",definition:"運動"},
-  {id:3,word:"team",pos:"n.",definition:"隊；組"},
-  {id:4,word:"practice",pos:"v.; n.",definition:"練習"},
-  {id:5,word:"swim",pos:"v.",definition:"游泳"},
-  {id:6,word:"join",pos:"v.",definition:"參加"},
-  {id:7,word:"eye",pos:"n.",definition:"眼睛"},
-  {id:8,word:"hair",pos:"n.",definition:"頭髮"},
-  {id:9,word:"know",pos:"v.",definition:"知道；認識"},
-  {id:10,word:"guitar",pos:"n.",definition:"吉他"},
-  {id:11,word:"piano",pos:"n.",definition:"鋼琴"},
-  {id:12,word:"paint",pos:"v.; n.",definition:"畫圖；顏料"},
-  {id:13,word:"nose",pos:"n.",definition:"鼻子"},
-  {id:14,word:"ear",pos:"n.",definition:"耳朵"},
-  {id:15,word:"mouth",pos:"n.",definition:"嘴巴"},
-  {id:16,word:"strong",pos:"adj.",definition:"強壯的"},
-  {id:17,word:"arm",pos:"n.",definition:"手臂"},
-  {id:18,word:"body",pos:"n.",definition:"身體"},
-  {id:19,word:"different",pos:"adj.",definition:"不同的"},
-  {id:20,word:"early",pos:"adj.; adv.",definition:"早的"},
-  {id:21,word:"often",pos:"adv.",definition:"經常"},
-  {id:22,word:"usually",pos:"adv.",definition:"通常"},
-  {id:23,word:"sometimes",pos:"adv.",definition:"有時候"},
-  {id:24,word:"tired",pos:"adj.",definition:"疲累的"},
-  {id:25,word:"never",pos:"adv.",definition:"從未"},
-  {id:26,word:"library",pos:"n.",definition:"圖書館"},
-  {id:27,word:"once",pos:"adv.",definition:"一次"},
-  {id:28,word:"twice",pos:"adv.",definition:"兩次"},
-  {id:29,word:"walk",pos:"v.",definition:"遛（寵物）"},
-  {id:30,word:"face",pos:"n.",definition:"臉"},
-  {id:31,word:"breakfast",pos:"n.",definition:"早餐"},
-  {id:32,word:"lunch",pos:"n.",definition:"午餐"},
-  {id:33,word:"exercise",pos:"v.; n.",definition:"運動"},
-  {id:34,word:"answer",pos:"n.; v.",definition:"回答；答案"},
-  {id:35,word:"trouble",pos:"n.",definition:"困難；麻煩"},
-  {id:36,word:"life",pos:"n.",definition:"生活；生命"},
-  {id:37,word:"flower",pos:"n.",definition:"花"},
-  {id:38,word:"thirsty",pos:"adj.",definition:"口渴的"},
-  {id:39,word:"coffee",pos:"n.",definition:"咖啡"},
-  {id:40,word:"shop",pos:"n.",definition:"商店"},
-  {id:41,word:"juice",pos:"n.",definition:"果汁"},
-  {id:42,word:"want",pos:"v.",definition:"想要"},
-  {id:43,word:"sweet",pos:"adj.",definition:"甜美的；甜的"},
-  {id:44,word:"hot",pos:"adj.",definition:"熱的"},
-  {id:45,word:"chocolate",pos:"n.",definition:"巧克力"},
-  {id:46,word:"bright",pos:"adj.",definition:"鮮豔的；明亮的"},
-  {id:47,word:"dark",pos:"adj.",definition:"黑的；暗的"},
-  {id:48,word:"milk",pos:"n.",definition:"牛奶"},
-  {id:49,word:"tea",pos:"n.",definition:"茶"},
-  {id:50,word:"soup",pos:"n.",definition:"湯"},
-  {id:51,word:"bread",pos:"n.",definition:"麵包"},
-  {id:52,word:"sky",pos:"n.",definition:"天空"},
-  {id:53,word:"street",pos:"n.",definition:"街道"},
-  {id:54,word:"wear",pos:"v.",definition:"戴；穿"},
-  {id:55,word:"mask",pos:"n.",definition:"口罩；面具"},
-  {id:56,word:"sick",pos:"adj.",definition:"生病的"},
-  {id:57,word:"water",pos:"n.",definition:"水"},
-  {id:58,word:"sugar",pos:"n.",definition:"糖"},
-  {id:59,word:"salt",pos:"n.",definition:"鹽"},
-  {id:60,word:"meal",pos:"n.",definition:"餐"},
-  {id:61,word:"candy",pos:"n.",definition:"糖果"},
-  {id:62,word:"pizza",pos:"n.",definition:"披薩"},
-  {id:63,word:"cheese",pos:"n.",definition:"乳酪"},
-  {id:64,word:"easy",pos:"adj.",definition:"容易的"},
-  {id:65,word:"snack",pos:"n.",definition:"點心"},
-  {id:66,word:"enjoy",pos:"v.",definition:"享受；喜愛"},
-  {id:67,word:"beach",pos:"n.",definition:"海灘"},
-  {id:68,word:"visit",pos:"v.; n.",definition:"拜訪"},
-  {id:69,word:"island",pos:"n.",definition:"島嶼"},
-  {id:70,word:"sea",pos:"n.",definition:"海"},
-  {id:71,word:"warm",pos:"adj.",definition:"溫暖的"},
-  {id:72,word:"busy",pos:"adj.",definition:"忙碌的"},
-  {id:73,word:"river",pos:"n.",definition:"河流"},
-  {id:74,word:"lake",pos:"n.",definition:"湖泊"},
-  {id:75,word:"mountain",pos:"n.",definition:"山"},
-  {id:76,word:"climb",pos:"v.",definition:"爬（山）"},
-  {id:77,word:"plant",pos:"v.; n.",definition:"種植；植物"},
-  {id:78,word:"change",pos:"v.; n.",definition:"改變"},
-  {id:79,word:"sell",pos:"v.",definition:"賣"},
-  {id:80,word:"miss",pos:"v.",definition:"想念"},
-  {id:81,word:"travel",pos:"v.; n.",definition:"旅行"},
-  {id:82,word:"rest",pos:"n.; v.",definition:"休息"},
-  {id:83,word:"hotel",pos:"n.",definition:"飯店"},
-  {id:84,word:"learn",pos:"v.",definition:"學習"},
-  {id:85,word:"story",pos:"n.",definition:"故事"},
-  {id:86,word:"cold",pos:"adj.",definition:"冷的"},
-  {id:87,word:"buy",pos:"v.",definition:"購買"},
-  {id:88,word:"market",pos:"n.",definition:"市場"},
-  {id:89,word:"temple",pos:"n.",definition:"寺廟"},
-  {id:90,word:"famous",pos:"adj.",definition:"有名的"},
-  {id:91,word:"cry",pos:"v.",definition:"哭泣"},
-  {id:92,word:"build",pos:"v.",definition:"建造"},
-  {id:93,word:"trip",pos:"n.",definition:"旅行；行程"},
-  {id:94,word:"moon",pos:"n.",definition:"月亮"},
-  {id:95,word:"perfect",pos:"adj.",definition:"完美的"},
-  {id:96,word:"create",pos:"v.",definition:"創造"},
-  {id:97,word:"village",pos:"n.",definition:"村莊"},
-  {id:98,word:"adult",pos:"n.",definition:"成人"},
-  {id:99,word:"forever",pos:"adv.",definition:"永遠"},
-  {id:100,word:"unique",pos:"adj.",definition:"獨特的"},
+  {id:3,word:"much",pos:"adj.; pron.; adv.",definition:"多（的）"},
+  {id:4,word:"team",pos:"n.",definition:"隊；組"},
+  {id:5,word:"practice",pos:"v.; n.",definition:"練習"},
+  {id:6,word:"every",pos:"adj.",definition:"每一"},
+  {id:7,word:"then",pos:"adv.",definition:"那麼"},
+  {id:8,word:"swim",pos:"v.",definition:"游泳"},
+  {id:9,word:"join",pos:"v.",definition:"參加"},
+  {id:10,word:"eye",pos:"n.",definition:"眼睛"},
+  {id:11,word:"hair",pos:"n.",definition:"頭髮"},
+  {id:12,word:"know",pos:"v.",definition:"知道；認識"},
+  {id:13,word:"hundred",pos:"n.",definition:"百"},
+  {id:14,word:"centimeter",pos:"n.",definition:"公分（= cm）"},
+  {id:15,word:"guitar",pos:"n.",definition:"吉他"},
+  {id:16,word:"piano",pos:"n.",definition:"鋼琴"},
+  {id:17,word:"fly a kite",pos:"phrase",definition:"放風箏"},
+  {id:18,word:"paint",pos:"v.; n.",definition:"畫圖；顏料；油漆"},
+  {id:19,word:"make a cake",pos:"phrase",definition:"做蛋糕"},
+  {id:20,word:"nose",pos:"n.",definition:"鼻子"},
+  {id:21,word:"leg",pos:"n.",definition:"腿"},
+  {id:22,word:"large",pos:"adj.",definition:"大的"},
+  {id:23,word:"ear",pos:"n.",definition:"耳朵"},
+  {id:24,word:"mouth",pos:"n.",definition:"嘴巴"},
+  {id:25,word:"thick",pos:"adj.",definition:"厚的"},
+  {id:26,word:"lip",pos:"n.",definition:"嘴唇"},
+  {id:27,word:"strong",pos:"adj.",definition:"強壯的"},
+  {id:28,word:"arm",pos:"n.",definition:"手臂"},
+  {id:29,word:"height",pos:"n.",definition:"身高；高度"},
+  {id:30,word:"player",pos:"n.",definition:"選手；球員"},
+  {id:31,word:"body",pos:"n.",definition:"身體"},
+  {id:32,word:"put one's all",pos:"phrase",definition:"盡全力"},
+  {id:33,word:"into",pos:"prep.",definition:"到⋯裡面"},
+  {id:34,word:"a lot of",pos:"phrase",definition:"很多的"},
+  {id:35,word:"stand out",pos:"phrase",definition:"突出"},
+  {id:36,word:"different",pos:"adj.",definition:"不同的"},
+  {id:37,word:"top",pos:"adj.",definition:"頂尖的"},
+  {id:38,word:"early",pos:"adj.; adv.",definition:"早的"},
+  {id:39,word:"work",pos:"n.; v.",definition:"工作"},
+  {id:40,word:"often",pos:"adv.",definition:"經常"},
+  {id:41,word:"get up",pos:"phrase",definition:"起床"},
+  {id:42,word:"usually",pos:"adv.",definition:"通常"},
+  {id:43,word:"seldom",pos:"adv.",definition:"很少"},
+  {id:44,word:"sometimes",pos:"adv.",definition:"有時候"},
+  {id:45,word:"even",pos:"adv.",definition:"甚至"},
+  {id:46,word:"late",pos:"adj.; adv.",definition:"晚的"},
+  {id:47,word:"hour",pos:"n.",definition:"小時"},
+  {id:48,word:"always",pos:"adv.",definition:"總是"},
+  {id:49,word:"tired",pos:"adj.",definition:"疲累的"},
+  {id:50,word:"shower",pos:"n.; v.",definition:"淋浴"},
+  {id:51,word:"never",pos:"adv.",definition:"從未"},
+  {id:52,word:"library",pos:"n.",definition:"圖書館"},
+  {id:53,word:"check out",pos:"phrase",definition:"借（書）"},
+  {id:54,word:"once",pos:"adv.",definition:"一次"},
+  {id:55,word:"twice",pos:"adv.",definition:"兩次"},
+  {id:56,word:"walk",pos:"v.",definition:"遛（寵物）"},
+  {id:57,word:"about",pos:"adv.",definition:"大約"},
+  {id:58,word:"face",pos:"n.",definition:"臉"},
+  {id:59,word:"breakfast",pos:"n.",definition:"早餐"},
+  {id:60,word:"lunch",pos:"n.",definition:"午餐"},
+  {id:61,word:"exercise",pos:"v.; n.",definition:"運動"},
+  {id:62,word:"computer",pos:"n.",definition:"電腦"},
+  {id:63,word:"minute",pos:"n.",definition:"分鐘"},
+  {id:64,word:"answer",pos:"n.; v.",definition:"回答；答案"},
+  {id:65,word:"question",pos:"n.",definition:"問題"},
+  {id:66,word:"trouble",pos:"n.",definition:"困難；麻煩"},
+  {id:67,word:"life",pos:"n.",definition:"生活；生命"},
+  {id:68,word:"love",pos:"v.; n.",definition:"愛"},
+  {id:69,word:"real",pos:"adj.",definition:"真實的"},
+  {id:70,word:"painting",pos:"n.",definition:"畫作"},
+  {id:71,word:"flower",pos:"n.",definition:"花"},
+  {id:72,word:"which",pos:"pron.; adj.",definition:"哪一個"},
+  {id:73,word:"thirsty",pos:"adj.",definition:"口渴的"},
+  {id:74,word:"coffee",pos:"n.",definition:"咖啡"},
+  {id:75,word:"shop",pos:"n.",definition:"商店"},
+  {id:76,word:"later",pos:"adv.",definition:"稍後；晚點"},
+  {id:77,word:"clerk",pos:"n.",definition:"店員"},
+  {id:78,word:"may",pos:"aux.",definition:"可以；可能"},
+  {id:79,word:"juice",pos:"n.",definition:"果汁"},
+  {id:80,word:"want",pos:"v.",definition:"想要"},
+  {id:81,word:"anything",pos:"pron.",definition:"任何事物"},
+  {id:82,word:"else",pos:"adv.",definition:"其他"},
+  {id:83,word:"treat",pos:"n.; v.",definition:"請客；款待"},
+  {id:84,word:"sweet",pos:"adj.",definition:"甜美的；甜的"},
+  {id:85,word:"hot",pos:"adj.",definition:"熱的"},
+  {id:86,word:"chocolate",pos:"n.",definition:"巧克力"},
+  {id:87,word:"dollar",pos:"n.",definition:"元"},
+  {id:88,word:"bright",pos:"adj.",definition:"鮮豔的；明亮的"},
+  {id:89,word:"dark",pos:"adj.",definition:"黑的；暗的"},
+  {id:90,word:"art",pos:"n.",definition:"美術；藝術"},
+  {id:91,word:"milk",pos:"n.",definition:"牛奶"},
+  {id:92,word:"hamburger",pos:"n.",definition:"漢堡"},
+  {id:93,word:"chicken rice",pos:"n.",definition:"雞肉飯"},
+  {id:94,word:"tea",pos:"n.",definition:"茶"},
+  {id:95,word:"ice cream",pos:"n.",definition:"冰淇淋"},
+  {id:96,word:"soup",pos:"n.",definition:"湯"},
+  {id:97,word:"sandwich",pos:"n.",definition:"三明治"},
+  {id:98,word:"show",pos:"v.",definition:"表現；秀出"},
+  {id:99,word:"part",pos:"n.",definition:"部分"},
+  {id:100,word:"sky",pos:"n.",definition:"天空"},
+  {id:101,word:"street",pos:"n.",definition:"街道"},
+  {id:102,word:"by",pos:"prep.",definition:"被；由"},
+  {id:103,word:"why",pos:"adv.",definition:"為什麼"},
+  {id:104,word:"wear",pos:"v.",definition:"戴；穿"},
+  {id:105,word:"mask",pos:"n.",definition:"口罩；面具"},
+  {id:106,word:"because",pos:"conj.",definition:"因為"},
+  {id:107,word:"sick",pos:"adj.",definition:"生病的"},
+  {id:108,word:"water",pos:"n.",definition:"水"},
+  {id:109,word:"glass",pos:"n.",definition:"玻璃杯；玻璃"},
+  {id:110,word:"flour",pos:"n.",definition:"麵粉"},
+  {id:111,word:"need",pos:"v.; n.",definition:"需要；需求"},
+  {id:112,word:"pie",pos:"n.",definition:"派"},
+  {id:113,word:"still",pos:"adv.",definition:"仍然"},
+  {id:114,word:"thing",pos:"n.",definition:"東西；事情"},
+  {id:115,word:"a little",pos:"phrase",definition:"一點點"},
+  {id:116,word:"salt",pos:"n.",definition:"鹽"},
+  {id:117,word:"something",pos:"pron.",definition:"某物；某事"},
+  {id:118,word:"sugar",pos:"n.",definition:"糖"},
+  {id:119,word:"get",pos:"v.",definition:"取得"},
+  {id:120,word:"so",pos:"conj.",definition:"所以"},
+  {id:121,word:"meal",pos:"n.",definition:"餐"},
+  {id:122,word:"bottle",pos:"n.",definition:"瓶子"},
+  {id:123,word:"candy",pos:"n.",definition:"糖果"},
+  {id:124,word:"popcorn",pos:"n.",definition:"爆米花"},
+  {id:125,word:"cup",pos:"n.",definition:"杯"},
+  {id:126,word:"bowl",pos:"n.",definition:"碗"},
+  {id:127,word:"fruit salad",pos:"n.",definition:"水果沙拉"},
+  {id:128,word:"pizza",pos:"n.",definition:"披薩"},
+  {id:129,word:"milk shake",pos:"n.",definition:"奶昔"},
+  {id:130,word:"can",pos:"n.",definition:"罐子"},
+  {id:131,word:"toast",pos:"n.; v.",definition:"烤吐司；烘烤"},
+  {id:132,word:"bread",pos:"n.",definition:"麵包"},
+  {id:133,word:"yummy",pos:"adj.",definition:"好吃的"},
+  {id:134,word:"easy",pos:"adj.",definition:"容易的"},
+  {id:135,word:"snack",pos:"n.",definition:"點心"},
+  {id:136,word:"kid",pos:"n.",definition:"小孩"},
+  {id:137,word:"cheese",pos:"n.",definition:"乳酪"},
+  {id:138,word:"plate",pos:"n.",definition:"盤子"},
+  {id:139,word:"enjoy",pos:"v.",definition:"享受；喜愛"},
+  {id:140,word:"turn into",pos:"phrase",definition:"（使）變成"},
+  {id:141,word:"each",pos:"adj.; pron.",definition:"每一個（的）"},
+  {id:142,word:"yesterday",pos:"adv.; n.",definition:"昨天"},
+  {id:143,word:"beach",pos:"n.",definition:"海灘"},
+  {id:144,word:"trash",pos:"n.",definition:"垃圾"},
+  {id:145,word:"ago",pos:"adv.",definition:"前；以前"},
+  {id:146,word:"visit",pos:"v.; n.",definition:"拜訪"},
+  {id:147,word:"island",pos:"n.",definition:"島嶼"},
+  {id:148,word:"a few",pos:"phrase",definition:"幾個；一些"},
+  {id:149,word:"sea",pos:"n.",definition:"海"},
+  {id:150,word:"stop",pos:"v.",definition:"停止"},
+  {id:151,word:"happen",pos:"v.",definition:"發生"},
+  {id:152,word:"dead",pos:"adj.",definition:"死亡的"},
+  {id:153,word:"warm",pos:"adj.",definition:"溫暖的"},
+  {id:154,word:"rainforest",pos:"n.",definition:"雨林"},
+  {id:155,word:"die",pos:"v.",definition:"死亡"},
+  {id:156,word:"busy",pos:"adj.",definition:"忙碌的"},
+  {id:157,word:"river",pos:"n.",definition:"河流"},
+  {id:158,word:"lake",pos:"n.",definition:"湖泊"},
+  {id:159,word:"hill",pos:"n.",definition:"山丘"},
+  {id:160,word:"mountain",pos:"n.",definition:"山"},
+  {id:161,word:"camp",pos:"n.; v.",definition:"露營；紮營"},
+  {id:162,word:"climb",pos:"v.",definition:"爬（山）"},
+  {id:163,word:"row a boat",pos:"phrase",definition:"划船"},
+  {id:164,word:"plant",pos:"v.; n.",definition:"種植；植物"},
+  {id:165,word:"hike",pos:"v.; n.",definition:"健行"},
+  {id:166,word:"picnic",pos:"v.; n.",definition:"野餐"},
+  {id:167,word:"live",pos:"v.",definition:"居住"},
+  {id:168,word:"playground",pos:"n.",definition:"遊樂場；操場"},
+  {id:169,word:"everything",pos:"pron.",definition:"每樣事物"},
+  {id:170,word:"change",pos:"v.; n.",definition:"改變"},
+  {id:171,word:"burn",pos:"v.",definition:"燃燒"},
+  {id:172,word:"oil",pos:"n.",definition:"油"},
+  {id:173,word:"sell",pos:"v.",definition:"賣"},
+  {id:174,word:"make money",pos:"phrase",definition:"賺錢"},
+  {id:175,word:"miss",pos:"v.",definition:"想念"},
+  {id:176,word:"little",pos:"adj.",definition:"小的"},
+  {id:177,word:"little by little",pos:"phrase",definition:"一點一點地；逐漸地"},
+  {id:178,word:"way",pos:"n.",definition:"方式"},
+  {id:179,word:"airport",pos:"n.",definition:"機場"},
+  {id:180,word:"travel",pos:"v.; n.",definition:"旅行；行進"},
+  {id:181,word:"rest",pos:"n.; v.",definition:"休息"},
+  {id:182,word:"hotel",pos:"n.",definition:"飯店"},
+  {id:183,word:"plane",pos:"n.",definition:"飛機"},
+  {id:184,word:"bookstore",pos:"n.",definition:"書店"},
+  {id:185,word:"buy",pos:"v.",definition:"購買"},
+  {id:186,word:"just",pos:"adv.",definition:"剛才；就；只"},
+  {id:187,word:"learn",pos:"v.",definition:"學習"},
+  {id:188,word:"story",pos:"n.",definition:"故事"},
+  {id:189,word:"cool",pos:"adj.",definition:"酷的"},
+  {id:190,word:"train",pos:"n.",definition:"火車"},
+  {id:191,word:"cold",pos:"adj.",definition:"冷的"},
+  {id:192,word:"try",pos:"v.; n.",definition:"嘗試"},
+  {id:193,word:"take",pos:"v.",definition:"帶；拿；取"},
+  {id:194,word:"station",pos:"n.",definition:"車站；局"},
+  {id:195,word:"department store",pos:"n.",definition:"百貨公司"},
+  {id:196,word:"restaurant",pos:"n.",definition:"餐廳"},
+  {id:197,word:"theater",pos:"n.",definition:"電影院"},
+  {id:198,word:"market",pos:"n.",definition:"市場"},
+  {id:199,word:"temple",pos:"n.",definition:"寺廟"},
+  {id:200,word:"famous",pos:"adj.",definition:"有名的"},
+  {id:201,word:"during",pos:"prep.",definition:"在⋯期間"},
+  {id:202,word:"besides",pos:"prep.; adv.",definition:"除⋯之外"},
+  {id:203,word:"fall in love",pos:"phrase",definition:"墜入情網"},
+  {id:204,word:"age",pos:"n.",definition:"年紀"},
+  {id:205,word:"lose",pos:"v.",definition:"失去"},
+  {id:206,word:"cry",pos:"v.",definition:"哭泣"},
+  {id:207,word:"hide",pos:"v.",definition:"躲藏"},
+  {id:208,word:"build",pos:"v.",definition:"建造"},
+  {id:209,word:"trip",pos:"n.",definition:"旅行；行程"},
+  {id:210,word:"sadly",pos:"adv.",definition:"令人傷心地"},
+  {id:211,word:"Easter",pos:"n.",definition:"復活節"},
+  {id:212,word:"moon",pos:"n.",definition:"月亮"},
+  {id:213,word:"church",pos:"n.",definition:"教堂"},
+  {id:214,word:"roll",pos:"v.",definition:"滾動"},
+  {id:215,word:"hunt",pos:"n.; v.",definition:"搜尋；狩獵"},
+  {id:216,word:"fall",pos:"v.",definition:"降臨；發生"},
+  {id:217,word:"get together",pos:"phrase",definition:"團聚"},
+  {id:218,word:"born",pos:"adj.",definition:"天生的"},
+  {id:219,word:"perfect",pos:"adj.",definition:"完美的"},
+  {id:220,word:"three-pointer",pos:"n.",definition:"三分球"},
+  {id:221,word:"hard work",pos:"n.",definition:"勤奮努力"},
+  {id:222,word:"both",pos:"pron.",definition:"兩者（都）"},
+  {id:223,word:"cram school",pos:"n.",definition:"補習班"},
+  {id:224,word:"owl",pos:"n.",definition:"貓頭鷹"},
+  {id:225,word:"nearby",pos:"adv.",definition:"附近"},
+  {id:226,word:"create",pos:"v.",definition:"創造"},
+  {id:227,word:"balance",pos:"n.",definition:"平衡"},
+  {id:228,word:"tub",pos:"n.",definition:"桶"},
+  {id:229,word:"slice",pos:"n.",definition:"片"},
+  {id:230,word:"spread",pos:"n.",definition:"抹醬"},
+  {id:231,word:"mix",pos:"v.",definition:"混合；拌和"},
+  {id:232,word:"coral reef",pos:"n.",definition:"珊瑚礁"},
+  {id:233,word:"palm",pos:"n.",definition:"棕櫚"},
+  {id:234,word:"company",pos:"n.",definition:"公司"},
+  {id:235,word:"village",pos:"n.",definition:"村莊"},
+  {id:236,word:"adult",pos:"n.",definition:"成人"},
+  {id:237,word:"building",pos:"n.",definition:"建築物"},
+  {id:238,word:"flea",pos:"n.",definition:"跳蚤"},
+  {id:239,word:"golden",pos:"adj.",definition:"金黃色的"},
+  {id:240,word:"well known",pos:"adj.",definition:"著名的"},
+  {id:241,word:"forever",pos:"adv.",definition:"永遠"},
+  {id:242,word:"activity",pos:"n.",definition:"活動"},
+  {id:243,word:"unique",pos:"adj.",definition:"獨特的"},
+  {id:244,word:"the sights",pos:"n.",definition:"風景；名勝"},
+  {id:245,word:"last",pos:"adv.; adj.",definition:"最後（裝）"},
+  {id:246,word:"into",pos:"prep.",definition:"進入"},
+  {id:247,word:"top",pos:"n.",definition:"頂端"},
+  {id:248,word:"work",pos:"n.",definition:"作品"},
+  {id:249,word:"by",pos:"prep.",definition:"在⋯旁"},
+  {id:250,word:"last",pos:"adj.",definition:"上一個的"},
+  {id:251,word:"last",pos:"v.",definition:"持續"},
+  {id:252,word:"way",pos:"n.",definition:"距離；路線"},
+  {id:253,word:"check out",pos:"phrase",definition:"查看"},
+  {id:254,word:"then",pos:"adv.",definition:"那時候"},
+  {id:255,word:"the other day",pos:"phrase",definition:"前幾天"},
+  {id:256,word:"back off",pos:"phrase",definition:"退後；走開"},
+  {id:257,word:"all right",pos:"phrase",definition:"好的；好吧"},
+  {id:258,word:"seldom",pos:"adv.",definition:"很少"},
+  {id:259,word:"do one's homework",pos:"phrase",definition:"做功課"},
+  {id:260,word:"brush one's teeth",pos:"phrase",definition:"刷牙"},
+  {id:261,word:"by the way",pos:"phrase",definition:"順帶一提"},
+  {id:262,word:"on the other hand",pos:"phrase",definition:"另一方面"},
+  {id:263,word:"make up for",pos:"phrase",definition:"彌補⋯⋯"},
+  {id:264,word:"stand out",pos:"phrase",definition:"突出；與眾不同"},
+  {id:265,word:"into",pos:"prep.",definition:"到⋯裡面"},
+  {id:266,word:"How come?",pos:"phrase",definition:"怎麼會？／為什麼？"},
+  {id:267,word:"I can't help it.",pos:"phrase",definition:"我沒辦法。"},
+  {id:268,word:"Of course.",pos:"phrase",definition:"當然。"},
+  {id:269,word:"Here you are.",pos:"phrase",definition:"給你。"},
+  {id:270,word:"You can say that again!",pos:"phrase",definition:"一點也沒錯！"},
+  {id:271,word:"How often...?",pos:"phrase",definition:"多常⋯⋯？"},
 ];
 
 const TOTAL = 20;
@@ -652,6 +954,15 @@ function pickQuestions() {
   });
 }
 
+function goHome() {
+  document.getElementById('result-screen').style.display = 'none';
+  const home = document.getElementById('home-screen');
+  home.style.display = 'flex';
+  home.style.animation = 'none';
+  void home.offsetWidth;
+  home.style.animation = 'fadeUp 0.4s ease';
+}
+
 function startGame() {
   questions = pickQuestions();
   current = 0;
@@ -660,9 +971,12 @@ function startGame() {
   results = [];
   startTime = Date.now();
 
-  document.getElementById('quiz-screen').style.display = 'flex';
+  document.getElementById('home-screen').style.display = 'none';
   document.getElementById('result-screen').style.display = 'none';
+  const qs = document.getElementById('quiz-screen');
+  qs.style.display = 'flex';
   document.getElementById('score-display').textContent = '0';
+  document.getElementById('progress-fill').style.width = '0%';
   updateQuestion();
 }
 
@@ -672,6 +986,7 @@ function updateQuestion() {
   document.getElementById('q-label').textContent = `題 ${current + 1} / ${TOTAL}`;
   document.getElementById('progress-fill').style.width = `${(current / TOTAL) * 100}%`;
   document.getElementById('word-display').textContent = q.word;
+
   const posEl = document.getElementById('word-pos');
   posEl.textContent = q.pos || '';
   posEl.style.display = q.pos ? 'inline-block' : 'none';
@@ -711,7 +1026,7 @@ function handleAnswer(idx, isCorrect) {
       score++;
       document.getElementById('score-display').textContent = score;
     }
-    results.push({ word: q.word, definition: q.definition, correct: !wrongThisQuestion });
+    results.push({ word: q.word, pos: q.pos, definition: q.definition, correct: !wrongThisQuestion });
 
     setTimeout(() => {
       current++;
@@ -722,11 +1037,9 @@ function handleAnswer(idx, isCorrect) {
       }
     }, 850);
   } else {
-    // Wrong: shake, disable this option, do NOT reveal correct answer
     wrongThisQuestion = true;
     btns[idx].classList.add('wrong');
     btns[idx].disabled = true;
-
     setTimeout(() => {
       btns[idx].classList.remove('wrong');
     }, 400);
@@ -747,25 +1060,20 @@ function showResult() {
   document.getElementById('result-subtitle').textContent = `答對 ${score} / ${TOTAL} 題`;
 
   const title = document.getElementById('result-title');
-  const trophy = rs.querySelector('.trophy-emoji');
+  const trophy = document.getElementById('trophy-emoji');
   if (score === TOTAL) {
-    title.textContent = '完美！全部答對！';
-    trophy.textContent = '🏆';
+    title.textContent = '完美！全部答對！'; trophy.textContent = '🏆';
   } else if (score >= 15) {
-    title.textContent = '太棒了！繼續保持！';
-    trophy.textContent = '🌟';
+    title.textContent = '太棒了！繼續保持！'; trophy.textContent = '🌟';
   } else if (score >= 10) {
-    title.textContent = '不錯喔！再接再厲！';
-    trophy.textContent = '💪';
+    title.textContent = '不錯喔！再接再厲！'; trophy.textContent = '💪';
   } else {
-    title.textContent = '辛苦了！繼續加油！';
-    trophy.textContent = '📚';
+    title.textContent = '辛苦了！繼續加油！'; trophy.textContent = '📚';
   }
 
-  const t = rs.querySelector('.trophy-emoji');
-  t.style.animation = 'none';
-  void t.offsetWidth;
-  t.style.animation = '';
+  trophy.style.animation = 'none';
+  void trophy.offsetWidth;
+  trophy.style.animation = 'trophy-bounce 0.6s cubic-bezier(.4,0,.2,1)';
 
   // Date & duration
   const now = new Date();
@@ -794,9 +1102,6 @@ function showResult() {
     list.appendChild(div);
   });
 }
-
-// Kick off
-startGame();
 </script>
 </body>
 </html>
