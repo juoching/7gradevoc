@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英文單字測驗</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #12131C;
+    --card: #1E2030;
+    --card2: #232537;
+    --card3: #2A2D45;
+    --text: #FFFFFF;
+    --text-sub: #A0A5B5;
+    --green: #2BDE73;
+    --green-dim: #1a6b3c;
+    --red: #FF4D6A;
+    --red-dim: #7a1a2b;
+    --purple: #7C5CFC;
+    --purple-hover: #9575FF;
+    --yellow: #FFD60A;
+    --border: #353752;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Noto Sans TC', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz-screen {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .progress-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 0.5px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 7px;
+    background: var(--card2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7C5CFC, #2BDE73);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+
+  .score-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 6px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .score-badge .check-icon {
+    color: var(--green);
+    font-size: 17px;
+  }
+
+  /* Word card */
+  .word-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 28px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  }
+
+  .card-hint {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--card2);
+    border-radius: 99px;
+    padding: 4px 14px;
+  }
+
+  .word-display {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-top: 6px;
+  }
+
+  .word-pos {
+    font-size: clamp(13px, 2.5vw, 16px);
+    font-weight: 500;
+    color: var(--text-sub);
+    background: var(--card3);
+    border-radius: 99px;
+    padding: 3px 12px;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Options grid */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .option-btn {
+    background: var(--card2);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    color: var(--text);
+    font-size: clamp(14px, 3.5vw, 17px);
+    font-weight: 600;
+    padding: 20px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    line-height: 1.3;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: var(--card3);
+    border-color: var(--purple);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 20px rgba(124,92,252,0.25);
+  }
+
+  .option-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  .option-btn.correct {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 20px rgba(43,222,115,0.3);
+    animation: pop 0.25s ease;
+  }
+
+  .option-btn.correct-hint {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(43,222,115,0.06);
+  }
+
+  .option-btn.wrong {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red);
+    animation: shake 0.35s ease;
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen {
+    display: none;
+    width: 100%;
+    max-width: 560px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  }
+
+  .trophy-emoji {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 12px;
+    animation: trophy-bounce 0.6s cubic-bezier(.4,0,.2,1);
+  }
+
+  @keyframes trophy-bounce {
+    0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+    70% { transform: scale(1.15) rotate(3deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .result-title {
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .result-subtitle {
+    color: var(--text-sub);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .stat-box {
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    border: 1.5px solid;
+  }
+
+  .stat-box.green-box {
+    background: rgba(43,222,115,0.08);
+    border-color: var(--green);
+  }
+
+  .stat-box.red-box {
+    background: rgba(255,77,106,0.08);
+    border-color: var(--red);
+  }
+
+  .stat-number {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .green-box .stat-number { color: var(--green); }
+  .red-box .stat-number { color: var(--red); }
+
+  .stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+    color: var(--text-sub);
+  }
+
+  /* Time info row */
+  .time-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--card2);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .time-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .time-item .time-icon {
+    font-size: 16px;
+  }
+
+  .time-item .time-value {
+    color: var(--text);
+  }
+
+  .time-item .time-label {
+    color: var(--text-sub);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .time-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+  }
+
+  /* Review list */
+  .review-section {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 20px 20px 0;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+
+  .review-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-sub);
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  .review-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px 0 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .review-list::-webkit-scrollbar { width: 4px; }
+  .review-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  .review-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 4px;
+    border-bottom: 1px solid rgba(53,55,82,0.5);
+  }
+
+  .review-item:last-child { border-bottom: none; }
+
+  .review-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+
+  .review-word {
+    font-weight: 700;
+    font-size: 15px;
+    flex: 1;
+  }
+
+  .review-word.correct-word { color: var(--green); }
+  .review-word.wrong-word { color: var(--red); }
+
+  .review-def {
+    color: var(--text-sub);
+    font-size: 13px;
+    text-align: right;
+    flex-shrink: 0;
+    max-width: 50%;
+  }
+
+  /* Play again button */
+  .play-again-btn {
+    background: var(--purple);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(124,92,252,0.35);
+    letter-spacing: 0.3px;
+  }
+
+  .play-again-btn:hover {
+    background: var(--purple-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(124,92,252,0.45);
+  }
+
+  .play-again-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Question transition animation */
+  .fade-in {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen">
+  <div class="status-bar">
+    <div class="progress-left">
+      <span class="q-label" id="q-label">題 1 / 20</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <div class="score-badge">
+      <span class="check-icon">✓</span>
+      <span id="score-display">0</span>
+    </div>
+  </div>
+
+  <div class="word-card fade-in" id="word-card">
+    <span class="card-hint">英文是什麼意思？</span>
+    <div class="word-display" id="word-display">---</div>
+    <span class="word-pos" id="word-pos"></span>
+  </div>
+
+  <div class="options-grid" id="options-grid">
+    <button class="option-btn" id="opt-0"></button>
+    <button class="option-btn" id="opt-1"></button>
+    <button class="option-btn" id="opt-2"></button>
+    <button class="option-btn" id="opt-3"></button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen">
+  <div class="result-card" id="result-card">
+    <span class="trophy-emoji">🏆</span>
+    <div class="result-title" id="result-title">完美！全部答對！</div>
+    <div class="result-subtitle" id="result-subtitle">答對 20 / 20 題</div>
+    <div class="stats-row">
+      <div class="stat-box green-box">
+        <div class="stat-number" id="correct-count">20</div>
+        <div class="stat-label">✓ 答對</div>
+      </div>
+      <div class="stat-box red-box">
+        <div class="stat-number" id="wrong-count">0</div>
+        <div class="stat-label">✗ 答錯</div>
+      </div>
+    </div>
+    <div class="time-row">
+      <div class="time-item">
+        <span class="time-icon">📅</span>
+        <div>
+          <div class="time-value" id="result-date">—</div>
+          <div class="time-label">練習日期</div>
+        </div>
+      </div>
+      <div class="time-divider"></div>
+      <div class="time-item">
+        <span class="time-icon">⏱️</span>
+        <div>
+          <div class="time-value" id="result-duration">—</div>
+          <div class="time-label">總練習時間</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="review-section">
+    <div class="review-title">📝 本回複習</div>
+    <div class="review-list" id="review-list"></div>
+  </div>
+
+  <button class="play-again-btn" onclick="startGame()">🔄 再玩一次（新題目）</button>
+</div>
+
+<script>
+const WORD_BANK = [
+  {id:1,word:"like",pos:"v.; prep.",definition:"喜歡；像⋯"},
+  {id:2,word:"sport",pos:"n.",definition:"運動"},
+  {id:3,word:"team",pos:"n.",definition:"隊；組"},
+  {id:4,word:"practice",pos:"v.; n.",definition:"練習"},
+  {id:5,word:"swim",pos:"v.",definition:"游泳"},
+  {id:6,word:"join",pos:"v.",definition:"參加"},
+  {id:7,word:"eye",pos:"n.",definition:"眼睛"},
+  {id:8,word:"hair",pos:"n.",definition:"頭髮"},
+  {id:9,word:"know",pos:"v.",definition:"知道；認識"},
+  {id:10,word:"guitar",pos:"n.",definition:"吉他"},
+  {id:11,word:"piano",pos:"n.",definition:"鋼琴"},
+  {id:12,word:"paint",pos:"v.; n.",definition:"畫圖；顏料"},
+  {id:13,word:"nose",pos:"n.",definition:"鼻子"},
+  {id:14,word:"ear",pos:"n.",definition:"耳朵"},
+  {id:15,word:"mouth",pos:"n.",definition:"嘴巴"},
+  {id:16,word:"strong",pos:"adj.",definition:"強壯的"},
+  {id:17,word:"arm",pos:"n.",definition:"手臂"},
+  {id:18,word:"body",pos:"n.",definition:"身體"},
+  {id:19,word:"different",pos:"adj.",definition:"不同的"},
+  {id:20,word:"early",pos:"adj.; adv.",definition:"早的"},
+  {id:21,word:"often",pos:"adv.",definition:"經常"},
+  {id:22,word:"usually",pos:"adv.",definition:"通常"},
+  {id:23,word:"sometimes",pos:"adv.",definition:"有時候"},
+  {id:24,word:"tired",pos:"adj.",definition:"疲累的"},
+  {id:25,word:"never",pos:"adv.",definition:"從未"},
+  {id:26,word:"library",pos:"n.",definition:"圖書館"},
+  {id:27,word:"once",pos:"adv.",definition:"一次"},
+  {id:28,word:"twice",pos:"adv.",definition:"兩次"},
+  {id:29,word:"walk",pos:"v.",definition:"遛（寵物）"},
+  {id:30,word:"face",pos:"n.",definition:"臉"},
+  {id:31,word:"breakfast",pos:"n.",definition:"早餐"},
+  {id:32,word:"lunch",pos:"n.",definition:"午餐"},
+  {id:33,word:"exercise",pos:"v.; n.",definition:"運動"},
+  {id:34,word:"answer",pos:"n.; v.",definition:"回答；答案"},
+  {id:35,word:"trouble",pos:"n.",definition:"困難；麻煩"},
+  {id:36,word:"life",pos:"n.",definition:"生活；生命"},
+  {id:37,word:"flower",pos:"n.",definition:"花"},
+  {id:38,word:"thirsty",pos:"adj.",definition:"口渴的"},
+  {id:39,word:"coffee",pos:"n.",definition:"咖啡"},
+  {id:40,word:"shop",pos:"n.",definition:"商店"},
+  {id:41,word:"juice",pos:"n.",definition:"果汁"},
+  {id:42,word:"want",pos:"v.",definition:"想要"},
+  {id:43,word:"sweet",pos:"adj.",definition:"甜美的；甜的"},
+  {id:44,word:"hot",pos:"adj.",definition:"熱的"},
+  {id:45,word:"chocolate",pos:"n.",definition:"巧克力"},
+  {id:46,word:"bright",pos:"adj.",definition:"鮮豔的；明亮的"},
+  {id:47,word:"dark",pos:"adj.",definition:"黑的；暗的"},
+  {id:48,word:"milk",pos:"n.",definition:"牛奶"},
+  {id:49,word:"tea",pos:"n.",definition:"茶"},
+  {id:50,word:"soup",pos:"n.",definition:"湯"},
+  {id:51,word:"bread",pos:"n.",definition:"麵包"},
+  {id:52,word:"sky",pos:"n.",definition:"天空"},
+  {id:53,word:"street",pos:"n.",definition:"街道"},
+  {id:54,word:"wear",pos:"v.",definition:"戴；穿"},
+  {id:55,word:"mask",pos:"n.",definition:"口罩；面具"},
+  {id:56,word:"sick",pos:"adj.",definition:"生病的"},
+  {id:57,word:"water",pos:"n.",definition:"水"},
+  {id:58,word:"sugar",pos:"n.",definition:"糖"},
+  {id:59,word:"salt",pos:"n.",definition:"鹽"},
+  {id:60,word:"meal",pos:"n.",definition:"餐"},
+  {id:61,word:"candy",pos:"n.",definition:"糖果"},
+  {id:62,word:"pizza",pos:"n.",definition:"披薩"},
+  {id:63,word:"cheese",pos:"n.",definition:"乳酪"},
+  {id:64,word:"easy",pos:"adj.",definition:"容易的"},
+  {id:65,word:"snack",pos:"n.",definition:"點心"},
+  {id:66,word:"enjoy",pos:"v.",definition:"享受；喜愛"},
+  {id:67,word:"beach",pos:"n.",definition:"海灘"},
+  {id:68,word:"visit",pos:"v.; n.",definition:"拜訪"},
+  {id:69,word:"island",pos:"n.",definition:"島嶼"},
+  {id:70,word:"sea",pos:"n.",definition:"海"},
+  {id:71,word:"warm",pos:"adj.",definition:"溫暖的"},
+  {id:72,word:"busy",pos:"adj.",definition:"忙碌的"},
+  {id:73,word:"river",pos:"n.",definition:"河流"},
+  {id:74,word:"lake",pos:"n.",definition:"湖泊"},
+  {id:75,word:"mountain",pos:"n.",definition:"山"},
+  {id:76,word:"climb",pos:"v.",definition:"爬（山）"},
+  {id:77,word:"plant",pos:"v.; n.",definition:"種植；植物"},
+  {id:78,word:"change",pos:"v.; n.",definition:"改變"},
+  {id:79,word:"sell",pos:"v.",definition:"賣"},
+  {id:80,word:"miss",pos:"v.",definition:"想念"},
+  {id:81,word:"travel",pos:"v.; n.",definition:"旅行"},
+  {id:82,word:"rest",pos:"n.; v.",definition:"休息"},
+  {id:83,word:"hotel",pos:"n.",definition:"飯店"},
+  {id:84,word:"learn",pos:"v.",definition:"學習"},
+  {id:85,word:"story",pos:"n.",definition:"故事"},
+  {id:86,word:"cold",pos:"adj.",definition:"冷的"},
+  {id:87,word:"buy",pos:"v.",definition:"購買"},
+  {id:88,word:"market",pos:"n.",definition:"市場"},
+  {id:89,word:"temple",pos:"n.",definition:"寺廟"},
+  {id:90,word:"famous",pos:"adj.",definition:"有名的"},
+  {id:91,word:"cry",pos:"v.",definition:"哭泣"},
+  {id:92,word:"build",pos:"v.",definition:"建造"},
+  {id:93,word:"trip",pos:"n.",definition:"旅行；行程"},
+  {id:94,word:"moon",pos:"n.",definition:"月亮"},
+  {id:95,word:"perfect",pos:"adj.",definition:"完美的"},
+  {id:96,word:"create",pos:"v.",definition:"創造"},
+  {id:97,word:"village",pos:"n.",definition:"村莊"},
+  {id:98,word:"adult",pos:"n.",definition:"成人"},
+  {id:99,word:"forever",pos:"adv.",definition:"永遠"},
+  {id:100,word:"unique",pos:"adj.",definition:"獨特的"},
+];
+
+const TOTAL = 20;
+let questions = [];
+let current = 0;
+let score = 0;
+let answered = false;
+let results = [];
+let startTime = null;
+let wrongThisQuestion = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestions() {
+  const pool = shuffle(WORD_BANK).slice(0, TOTAL);
+  return pool.map(item => {
+    const wrong = shuffle(WORD_BANK.filter(w => w.id !== item.id)).slice(0, 3);
+    const options = shuffle([item, ...wrong]);
+    return { ...item, options };
+  });
+}
+
+function startGame() {
+  questions = pickQuestions();
+  current = 0;
+  score = 0;
+  answered = false;
+  results = [];
+  startTime = Date.now();
+
+  document.getElementById('quiz-screen').style.display = 'flex';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('score-display').textContent = '0';
+  updateQuestion();
+}
+
+function updateQuestion() {
+  const q = questions[current];
+  wrongThisQuestion = false;
+  document.getElementById('q-label').textContent = `題 ${current + 1} / ${TOTAL}`;
+  document.getElementById('progress-fill').style.width = `${(current / TOTAL) * 100}%`;
+  document.getElementById('word-display').textContent = q.word;
+  const posEl = document.getElementById('word-pos');
+  posEl.textContent = q.pos || '';
+  posEl.style.display = q.pos ? 'inline-block' : 'none';
+
+  const card = document.getElementById('word-card');
+  card.classList.remove('fade-in');
+  void card.offsetWidth;
+  card.classList.add('fade-in');
+
+  const grid = document.getElementById('options-grid');
+  grid.classList.remove('fade-in');
+  void grid.offsetWidth;
+  grid.classList.add('fade-in');
+
+  q.options.forEach((opt, i) => {
+    const btn = document.getElementById(`opt-${i}`);
+    btn.textContent = opt.definition;
+    btn.className = 'option-btn';
+    btn.disabled = false;
+    btn.onclick = () => handleAnswer(i, opt.id === q.id);
+  });
+
+  answered = false;
+}
+
+function handleAnswer(idx, isCorrect) {
+  if (answered) return;
+
+  const q = questions[current];
+  const btns = [0,1,2,3].map(i => document.getElementById(`opt-${i}`));
+
+  if (isCorrect) {
+    answered = true;
+    btns.forEach(b => b.disabled = true);
+    btns[idx].classList.add('correct');
+    if (!wrongThisQuestion) {
+      score++;
+      document.getElementById('score-display').textContent = score;
+    }
+    results.push({ word: q.word, definition: q.definition, correct: !wrongThisQuestion });
+
+    setTimeout(() => {
+      current++;
+      if (current >= TOTAL) {
+        showResult();
+      } else {
+        updateQuestion();
+      }
+    }, 850);
+  } else {
+    // Wrong: shake, disable this option, do NOT reveal correct answer
+    wrongThisQuestion = true;
+    btns[idx].classList.add('wrong');
+    btns[idx].disabled = true;
+
+    setTimeout(() => {
+      btns[idx].classList.remove('wrong');
+    }, 400);
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'flex';
+  rs.style.flexDirection = 'column';
+
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const wrong = TOTAL - score;
+  document.getElementById('correct-count').textContent = score;
+  document.getElementById('wrong-count').textContent = wrong;
+  document.getElementById('result-subtitle').textContent = `答對 ${score} / ${TOTAL} 題`;
+
+  const title = document.getElementById('result-title');
+  const trophy = rs.querySelector('.trophy-emoji');
+  if (score === TOTAL) {
+    title.textContent = '完美！全部答對！';
+    trophy.textContent = '🏆';
+  } else if (score >= 15) {
+    title.textContent = '太棒了！繼續保持！';
+    trophy.textContent = '🌟';
+  } else if (score >= 10) {
+    title.textContent = '不錯喔！再接再厲！';
+    trophy.textContent = '💪';
+  } else {
+    title.textContent = '辛苦了！繼續加油！';
+    trophy.textContent = '📚';
+  }
+
+  const t = rs.querySelector('.trophy-emoji');
+  t.style.animation = 'none';
+  void t.offsetWidth;
+  t.style.animation = '';
+
+  // Date & duration
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  document.getElementById('result-date').textContent = `${y} 年 ${m} 月 ${d} 日`;
+
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  document.getElementById('result-duration').textContent =
+    mins > 0 ? `${mins} 分 ${String(secs).padStart(2,'0')} 秒` : `${secs} 秒`;
+
+  // Review list
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  results.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <span class="review-icon">${r.correct ? '✅' : '❌'}</span>
+      <span class="review-word ${r.correct ? 'correct-word' : 'wrong-word'}">${r.word}</span>
+      <span class="review-def">${r.definition}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// Kick off
+startGame();
+</script>
+</body>
+</html>
